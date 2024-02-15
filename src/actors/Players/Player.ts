@@ -9,37 +9,51 @@ import {
 } from "excalibur";
 import { ANCHOR_CENTER, DOWN, Direction, SCALE_2x } from "@root/constants.ts";
 import { DirectionQueue } from "@/classes/DirectionQueue";
-import { DrawShapeHelper } from "@/classes/DrawShapeHelper";
+// import { DrawShapeHelper } from "@/classes/DrawShapeHelper";
+import {
+  AnimationMap,
+  generateCharacterAnimations,
+} from "@/character-animations";
+import { PlayerAnimations } from "./PlayerAnimations";
 
 export class Player extends Actor {
   directionQueue: DirectionQueue;
   facing: Direction;
-  constructor(x: number, y: number, _skinId: string) {
+  skinAnimations: AnimationMap;
+  playerAnimations?: PlayerAnimations;
+  walkingMsLeft?: number;
+
+  constructor(x: number, y: number, skinId: string) {
     super({
       pos: new Vector(x, y),
       width: 32,
       height: 32,
       scale: SCALE_2x,
-      collider: Shape.Box(15, 15, ANCHOR_CENTER, new Vector(0, 0)),
+      collider: Shape.Box(15, 15, ANCHOR_CENTER, new Vector(0, 6)),
       collisionType: CollisionType.Active,
       color: Color.Green,
     });
 
     this.directionQueue = new DirectionQueue();
     this.facing = DOWN;
+    this.skinAnimations = generateCharacterAnimations(skinId);
+    this.graphics.use(this.skinAnimations.DOWN.WALK);
   }
 
   onInitialize(_engine: Engine): void {
-    new DrawShapeHelper(this);
+    // new DrawShapeHelper(this);
+    this.playerAnimations = new PlayerAnimations(this);
   }
 
   onPreUpdate(engine: Engine, delta: number): void {
     this.directionQueue.update(engine);
 
     this.onPreUpdateMovementKeys(engine, delta);
+
+    this.playerAnimations?.showRelevantAnimation();
   }
 
-  onPreUpdateMovementKeys(engine: Engine, delta: number) {
+  onPreUpdateMovementKeys(engine: Engine, _delta: number) {
     const keyboard = engine.input.keyboard;
     const walkingSpeed = 160;
 
