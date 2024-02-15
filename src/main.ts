@@ -1,7 +1,8 @@
 import { Engine } from "excalibur";
 import { VIEWPORT_HEIGHT, VIEWPORT_WIDTH, SCALE } from "@root/constants.ts";
 import { Player } from "@/actors/Players/Player.ts";
-import { Floor } from "@/actors/Floor.ts";
+import { loader } from "@/resources.ts";
+import { Map_Indoor } from "./maps/Map_Indoor";
 
 const game = new Engine({
   width: VIEWPORT_WIDTH * SCALE,
@@ -9,12 +10,11 @@ const game = new Engine({
   fixedUpdateFps: 60,
   antialiasing: false, // Pixel art graphics
 });
+const map = new Map_Indoor();
+game.add(map);
 
-const player = new Player(200, 200, "BLUE");
+const player = new Player(200, 200, "RED");
 game.add(player);
 
-const floor = new Floor(1, 1, 1, 6);
-game.add(floor);
-
 // game.start(loader);
-game.start();
+game.start(loader);
