@@ -1,6 +1,6 @@
 import { Floor } from "@/actors/Floor";
 import { Images } from "@/resources";
-import { ANCHOR_TOP_LEFT, SCALE_2x } from "@root/constants.ts";
+import { ANCHOR_TOP_LEFT, SCALE_2x } from "@/constants";
 import { Actor, Engine } from "excalibur";
 
 const mapSprite = Images.indoorImage.toSprite();

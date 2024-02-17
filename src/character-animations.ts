@@ -11,7 +11,7 @@ import {
   UP,
   ValidAnimation,
   WALK,
-} from "@root/constants.ts";
+} from "@/constants.ts";
 
 const WALK_ANIMATION_SPEED = 150;
 const characterSpriteSheetGridConfig = {

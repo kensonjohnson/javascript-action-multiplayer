@@ -7,7 +7,7 @@ import {
   Engine,
   Keys,
 } from "excalibur";
-import { ANCHOR_CENTER, DOWN, Direction, SCALE_2x } from "@root/constants.ts";
+import { ANCHOR_CENTER, DOWN, Direction, SCALE_2x } from "@/constants";
 import { DirectionQueue } from "@/classes/DirectionQueue";
 // import { DrawShapeHelper } from "@/classes/DrawShapeHelper";
 import {
