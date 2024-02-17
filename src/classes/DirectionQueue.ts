@@ -1,5 +1,5 @@
 import { Engine, Input, Keys } from "excalibur";
-import { UP, DOWN, LEFT, RIGHT, Direction } from "@root/constants.ts";
+import { UP, DOWN, LEFT, RIGHT, Direction } from "@/constants";
 
 export class DirectionQueue {
   heldDirections: Direction[];

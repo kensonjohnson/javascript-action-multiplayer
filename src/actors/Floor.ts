@@ -1,5 +1,5 @@
 import { Actor, Vector, Shape, CollisionType, Color } from "excalibur";
-import { ANCHOR_TOP_LEFT, SCALE, SCALE_2x } from "@root/constants.ts";
+import { ANCHOR_TOP_LEFT, SCALE, SCALE_2x } from "@/constants";
 
 export class Floor extends Actor {
   constructor(x: number, y: number, columns: number, rows: number) {
