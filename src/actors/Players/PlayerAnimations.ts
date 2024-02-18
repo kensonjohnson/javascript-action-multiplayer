@@ -6,8 +6,23 @@ export class PlayerAnimations {
     this.actor = actor;
   }
 
+  progressThroughActionAnimation(delta: number) {
+    const { actor } = this;
+    if (actor.actionAnimation) {
+      actor.vel.x = 0;
+      actor.vel.y = 0;
+      actor.actionAnimation.work(delta);
+    }
+  }
+
   showRelevantAnimation() {
     const { actor } = this;
+
+    // If a dedicated action is happening, show that animation
+    if (actor.actionAnimation) {
+      actor.graphics.use(actor.actionAnimation.frame);
+      return;
+    }
 
     actor.graphics.use(actor.skinAnimations[actor.facing].WALK);
 
