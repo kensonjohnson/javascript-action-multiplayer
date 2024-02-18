@@ -1,5 +1,5 @@
 import { Map_Indoor } from "@/maps/Map_Indoor";
-import { SCALE } from "@/constants.js";
+import { SCALE } from "@/constants";
 import { Actor, Vector } from "excalibur";
 
 export class Player_CameraStrategy {
