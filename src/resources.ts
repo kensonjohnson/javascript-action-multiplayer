@@ -1,8 +1,14 @@
 import { ImageSource, Loader } from "excalibur";
 
 export const Images = {
+  // Characters
   redSheetImage: new ImageSource("sprites/character-red-sheet.png"),
+
+  // Maps
   indoorImage: new ImageSource("maps/indoor.png"),
+
+  // Weapons
+  swordSheetImage: new ImageSource("sprites/sword-sheet.png"),
 };
 
 export const Sounds = {};
