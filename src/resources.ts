@@ -9,6 +9,7 @@ export const Images = {
 
   // Weapons
   swordSheetImage: new ImageSource("sprites/sword-sheet.png"),
+  arrowSheetImage: new ImageSource("sprites/arrow-sheet.png"),
 };
 
 export const Sounds = {};
