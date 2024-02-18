@@ -15,12 +15,19 @@ import {
   generateCharacterAnimations,
 } from "@/character-animations";
 import { PlayerAnimations } from "./PlayerAnimations";
+import { PlayerActions } from "./PlayerActions";
+import { SpriteSequence } from "@/classes/SpriteSequence";
+
+const ACTION_1_KEY = Keys.Z;
+const ACTION_2_KEY = Keys.X;
 
 export class Player extends Actor {
   directionQueue: DirectionQueue;
   facing: Direction;
+  actionAnimation: SpriteSequence | null;
   skinAnimations: AnimationMap;
   playerAnimations?: PlayerAnimations;
+  playerActions?: PlayerActions;
   walkingMsLeft?: number;
 
   constructor(x: number, y: number, skinId: string) {
@@ -36,6 +43,7 @@ export class Player extends Actor {
 
     this.directionQueue = new DirectionQueue();
     this.facing = DOWN;
+    this.actionAnimation = null;
     this.skinAnimations = generateCharacterAnimations(skinId);
     this.graphics.use(this.skinAnimations.DOWN.WALK);
   }
@@ -43,12 +51,19 @@ export class Player extends Actor {
   onInitialize(_engine: Engine): void {
     // new DrawShapeHelper(this);
     this.playerAnimations = new PlayerAnimations(this);
+    this.playerActions = new PlayerActions(this);
   }
 
   onPreUpdate(engine: Engine, delta: number): void {
     this.directionQueue.update(engine);
 
-    this.onPreUpdateMovementKeys(engine, delta);
+    // Work on dedicated animation if we are doing one
+    this.playerAnimations?.progressThroughActionAnimation(delta);
+
+    if (!this.actionAnimation) {
+      this.onPreUpdateMovementKeys(engine, delta);
+      this.onPreUpdateActionKeys(engine);
+    }
 
     this.playerAnimations?.showRelevantAnimation();
   }
@@ -80,5 +95,14 @@ export class Player extends Actor {
     }
 
     this.facing = this.directionQueue.direction ?? this.facing;
+  }
+
+  onPreUpdateActionKeys(engine: Engine) {
+    // Register action keys
+    if (engine.input.keyboard.wasPressed(ACTION_1_KEY)) {
+      this.playerActions?.actionSwordSwing();
+      return;
+    }
+    return; // More to come
   }
 }
