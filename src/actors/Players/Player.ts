@@ -103,6 +103,10 @@ export class Player extends Actor {
       this.playerActions?.actionSwordSwing();
       return;
     }
+    if (engine.input.keyboard.wasPressed(ACTION_2_KEY)) {
+      this.playerActions?.actionShootArrow();
+      return;
+    }
     return; // More to come
   }
 }
