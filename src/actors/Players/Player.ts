@@ -29,8 +29,13 @@ export class Player extends Actor {
   playerAnimations?: PlayerAnimations;
   playerActions?: PlayerActions;
   walkingMsLeft?: number;
+  skinId: "RED" | "BLUE" | "GRAY" | "YELLOW";
 
-  constructor(x: number, y: number, skinId: string) {
+  constructor(
+    x: number,
+    y: number,
+    skinId: "RED" | "BLUE" | "GRAY" | "YELLOW"
+  ) {
     super({
       pos: new Vector(x, y),
       width: 32,
@@ -46,6 +51,7 @@ export class Player extends Actor {
     this.actionAnimation = null;
     this.skinAnimations = generateCharacterAnimations(skinId);
     this.graphics.use(this.skinAnimations.DOWN.WALK);
+    this.skinId = skinId;
   }
 
   onInitialize(_engine: Engine): void {
@@ -107,6 +113,28 @@ export class Player extends Actor {
       this.playerActions?.actionShootArrow();
       return;
     }
-    return; // More to come
+    [
+      {
+        key: Keys.Digit1,
+        skinId: "RED",
+      },
+      {
+        key: Keys.Digit2,
+        skinId: "BLUE",
+      },
+      {
+        key: Keys.Digit3,
+        skinId: "GRAY",
+      },
+      {
+        key: Keys.Digit4,
+        skinId: "YELLOW",
+      },
+    ].forEach(({ key, skinId }) => {
+      if (engine.input.keyboard.wasPressed(key)) {
+        this.skinId = skinId as "RED" | "BLUE" | "GRAY" | "YELLOW";
+      }
+      this.skinAnimations = generateCharacterAnimations(this.skinId);
+    });
   }
 }

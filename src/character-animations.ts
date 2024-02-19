@@ -25,9 +25,24 @@ const redSpriteSheet = SpriteSheet.fromImageSource({
   image: Images.redSheetImage,
   grid: characterSpriteSheetGridConfig,
 });
+const blueSpriteSheet = SpriteSheet.fromImageSource({
+  image: Images.blueSheetImage,
+  grid: characterSpriteSheetGridConfig,
+});
+const graySpriteSheet = SpriteSheet.fromImageSource({
+  image: Images.graySheetImage,
+  grid: characterSpriteSheetGridConfig,
+});
+const yellowSpriteSheet = SpriteSheet.fromImageSource({
+  image: Images.yellowSheetImage,
+  grid: characterSpriteSheetGridConfig,
+});
 
 const SPRITE_SHEET_MAP = {
   RED: redSpriteSheet,
+  BLUE: blueSpriteSheet,
+  GRAY: graySpriteSheet,
+  YELLOW: yellowSpriteSheet,
 };
 
 const ANIMATION_CONFIGS = {
