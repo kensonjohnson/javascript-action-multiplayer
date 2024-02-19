@@ -11,6 +11,7 @@ import {
   ANCHOR_CENTER,
   DOWN,
   Direction,
+  EVENT_SEND_PLAYER_UPDATE,
   LEFT,
   SCALE_2x,
   UP,
@@ -24,6 +25,7 @@ import {
 import { PlayerAnimations } from "./PlayerAnimations";
 import { PlayerActions } from "./PlayerActions";
 import { SpriteSequence } from "@/classes/SpriteSequence";
+import { NetworkUpdater } from "@/classes/NetworkUpdater";
 
 const ACTION_1_KEY = Keys.Z;
 const ACTION_2_KEY = Keys.X;
@@ -44,6 +46,7 @@ export class Player extends Actor {
     painVelY: number;
   };
   hasGhostPainState?: boolean;
+  networkUpdater?: NetworkUpdater;
 
   constructor(
     x: number,
@@ -69,10 +72,20 @@ export class Player extends Actor {
     this.isPainFlashing = false;
   }
 
-  onInitialize(_engine: Engine): void {
+  onInitialize(engine: Engine): void {
     // new DrawShapeHelper(this);
     this.playerAnimations = new PlayerAnimations(this);
     this.playerActions = new PlayerActions(this);
+    this.networkUpdater = new NetworkUpdater(engine, EVENT_SEND_PLAYER_UPDATE);
+  }
+
+  // Concats enough information to send to other players
+  createNetworkUpdaterString() {
+    const actionType = this.actionAnimation?.type ?? "NULL";
+    const isInPain = Boolean(this.painState);
+    const x = Math.round(this.pos.x);
+    const y = Math.round(this.pos.y);
+    return `${actionType}|${x}|${y}|${this.vel.x}|${this.vel.y}|${this.skinId}|${this.facing}|${isInPain}|${this.isPainFlashing}`;
   }
 
   takeDamage() {
@@ -105,6 +118,10 @@ export class Player extends Actor {
     }
 
     this.playerAnimations?.showRelevantAnimation();
+
+    // Inform network updater
+    const networkUpdaterString = this.createNetworkUpdaterString();
+    this.networkUpdater?.sendStateUpdate(networkUpdaterString);
   }
 
   onPreUpdateMovement(engine: Engine, delta: number) {
