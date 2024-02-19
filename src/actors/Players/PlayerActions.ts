@@ -73,14 +73,12 @@ export class PlayerActions {
         {
           frame: actor.skinAnimations[actor.facing][SWORD1],
           duration: SHOOT_ARROW_SPEED,
-          actorObjectCallback: (arrowInstance) => {
-            //
-          },
+          actorObjectCallback: () => {},
         },
         {
           frame: actor.skinAnimations[actor.facing][SWORD2],
           duration: SHOOT_ARROW_SPEED,
-          actorObjectCallback: (arrowInstance) => {
+          actorObjectCallback: () => {
             const arrow = new Arrow(actor.pos.x, actor.pos.y, actor.facing);
             arrow.owner = actor;
             engine.add(arrow);
@@ -91,5 +89,18 @@ export class PlayerActions {
         actor.actionAnimation = null;
       }
     );
+  }
+
+  async flashSeries() {
+    const { actor } = this;
+    actor.isPainFlashing = true;
+    const PAIN_FLASH_SPEED = 100;
+    for (let i = 0; i <= 4; i++) {
+      actor.graphics.opacity = 0;
+      await actor.actions.delay(PAIN_FLASH_SPEED).toPromise();
+      actor.graphics.opacity = 1;
+      await actor.actions.delay(PAIN_FLASH_SPEED).toPromise();
+    }
+    actor.isPainFlashing = false;
   }
 }

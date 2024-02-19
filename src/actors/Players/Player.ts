@@ -7,7 +7,14 @@ import {
   Engine,
   Keys,
 } from "excalibur";
-import { ANCHOR_CENTER, DOWN, Direction, SCALE_2x } from "@/constants";
+import {
+  ANCHOR_CENTER,
+  DOWN,
+  Direction,
+  LEFT,
+  SCALE_2x,
+  UP,
+} from "@/constants";
 import { DirectionQueue } from "@/classes/DirectionQueue";
 // import { DrawShapeHelper } from "@/classes/DrawShapeHelper";
 import {
@@ -30,6 +37,13 @@ export class Player extends Actor {
   playerActions?: PlayerActions;
   walkingMsLeft?: number;
   skinId: "RED" | "BLUE" | "GRAY" | "YELLOW";
+  isPainFlashing: boolean;
+  painState?: {
+    msLeft: number;
+    painVelX: number;
+    painVelY: number;
+  };
+  hasGhostPainState?: boolean;
 
   constructor(
     x: number,
@@ -52,12 +66,31 @@ export class Player extends Actor {
     this.skinAnimations = generateCharacterAnimations(skinId);
     this.graphics.use(this.skinAnimations.DOWN.WALK);
     this.skinId = skinId;
+    this.isPainFlashing = false;
   }
 
   onInitialize(_engine: Engine): void {
     // new DrawShapeHelper(this);
     this.playerAnimations = new PlayerAnimations(this);
     this.playerActions = new PlayerActions(this);
+  }
+
+  takeDamage() {
+    // No pain if already in pain
+    if (this.isPainFlashing) {
+      return;
+    }
+
+    // Start new pain animation
+    const PAIN_VELOCITY = 150;
+    this.painState = {
+      msLeft: 220,
+      painVelX: this.facing === LEFT ? PAIN_VELOCITY : -PAIN_VELOCITY,
+      painVelY: this.facing === UP ? PAIN_VELOCITY : -PAIN_VELOCITY,
+    };
+
+    // Flash for a little bit
+    this.playerActions?.flashSeries();
   }
 
   onPreUpdate(engine: Engine, delta: number): void {
@@ -67,14 +100,27 @@ export class Player extends Actor {
     this.playerAnimations?.progressThroughActionAnimation(delta);
 
     if (!this.actionAnimation) {
-      this.onPreUpdateMovementKeys(engine, delta);
+      this.onPreUpdateMovement(engine, delta);
       this.onPreUpdateActionKeys(engine);
     }
 
     this.playerAnimations?.showRelevantAnimation();
   }
 
-  onPreUpdateMovementKeys(engine: Engine, _delta: number) {
+  onPreUpdateMovement(engine: Engine, delta: number) {
+    // Work down pain state
+    if (this.painState) {
+      this.vel.x = this.painState.painVelX;
+      this.vel.y = this.painState.painVelY;
+
+      // Work on getting rid of pain state
+      this.painState.msLeft -= delta;
+      if (this.painState.msLeft <= 0) {
+        this.painState = undefined;
+      }
+      return;
+    }
+
     const keyboard = engine.input.keyboard;
     const walkingSpeed = 160;
 
@@ -133,8 +179,12 @@ export class Player extends Actor {
     ].forEach(({ key, skinId }) => {
       if (engine.input.keyboard.wasPressed(key)) {
         this.skinId = skinId as "RED" | "BLUE" | "GRAY" | "YELLOW";
+        this.skinAnimations = generateCharacterAnimations(this.skinId);
       }
-      this.skinAnimations = generateCharacterAnimations(this.skinId);
     });
+
+    if (engine.input.keyboard.wasPressed(Keys.Space)) {
+      this.takeDamage();
+    }
   }
 }
