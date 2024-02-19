@@ -18,6 +18,12 @@ export class PlayerAnimations {
   showRelevantAnimation() {
     const { actor } = this;
 
+    // Always prioritize showing PAIN if we are in pain.
+    if (actor.hasGhostPainState || actor.painState) {
+      actor.graphics.use(actor.skinAnimations[actor.facing].PAIN);
+      return;
+    }
+
     // If a dedicated action is happening, show that animation
     if (actor.actionAnimation) {
       actor.graphics.use(actor.actionAnimation.frame);
