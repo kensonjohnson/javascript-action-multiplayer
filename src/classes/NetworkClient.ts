@@ -110,7 +110,7 @@ export class NetworkClient {
     return list.filter((id: string) => id !== this.peerId);
   }
 
-  sendUpdate(update) {
+  sendUpdate(update: string) {
     this.connectionMap.forEach((connection) => {
       connection.send(update);
     });
