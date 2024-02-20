@@ -1,8 +1,9 @@
+import { NetworkPlayer } from "./NetworkPlayer";
 import { Player } from "./Player";
 
 export class PlayerAnimations {
-  actor: Player;
-  constructor(actor: Player) {
+  actor: Player | NetworkPlayer;
+  constructor(actor: Player | NetworkPlayer) {
     this.actor = actor;
   }
 

@@ -1,9 +1,16 @@
 import { Engine } from "excalibur";
-import { VIEWPORT_HEIGHT, VIEWPORT_WIDTH, SCALE } from "@/constants";
+import {
+  VIEWPORT_HEIGHT,
+  VIEWPORT_WIDTH,
+  SCALE,
+  EVENT_SEND_PLAYER_UPDATE,
+} from "@/constants";
 import { Player } from "@/actors/Players/Player.ts";
 import { loader } from "@/resources.ts";
 import { Map_Indoor } from "./maps/Map_Indoor";
 import { Player_CameraStrategy } from "./classes/Player_CameraStrategy";
+import { NetworkClient } from "./classes/NetworkClient";
+import { NetworkActorsMap } from "./classes/NetworkActorsMap";
 
 const game = new Engine({
   width: VIEWPORT_WIDTH * SCALE,
@@ -20,6 +27,15 @@ game.add(player);
 game.on("initialize", () => {
   const cameraStrategy = new Player_CameraStrategy(player, map);
   game.currentScene.camera.addStrategy(cameraStrategy);
+
+  // Create player state list and network listener
+  new NetworkActorsMap(game);
+  const peer = new NetworkClient(game);
+
+  // When one of my nodes update, send it to all players
+  game.on(EVENT_SEND_PLAYER_UPDATE, (update: any) => {
+    peer.sendUpdate(update);
+  });
 });
 
 // game.start(loader);

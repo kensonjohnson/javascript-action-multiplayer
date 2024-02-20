@@ -18,6 +18,7 @@ import {
   Animation,
 } from "excalibur";
 import { Player } from "./Players/Player";
+import { NetworkPlayer } from "./Players/NetworkPlayer";
 
 const swordSpriteSheet = SpriteSheet.fromImageSource({
   image: Images.swordSheetImage,
@@ -36,7 +37,7 @@ export const SWORD_SWING_3 = "SWORD_SWING_3";
 export class Sword extends Actor {
   direction: Direction;
   isUsed: boolean;
-  owner: Player | null;
+  owner: Player | NetworkPlayer | null;
   frames: {
     [direction in Direction]: {
       SWORD_SWING_1: Animation;

@@ -4,12 +4,13 @@ import { Player } from "./Player";
 import { SpriteSequence } from "@/classes/SpriteSequence";
 import { SWORD_SWING_1, SWORD_SWING_2, SWORD_SWING_3, Sword } from "../Sword";
 import { Arrow } from "../Arrow";
+import { NetworkPlayer } from "./NetworkPlayer";
 
 export class PlayerActions {
-  actor: Player;
+  actor: Player | NetworkPlayer;
   engine: Engine;
 
-  constructor(actor: Player) {
+  constructor(actor: Player | NetworkPlayer) {
     this.actor = actor;
     this.engine = actor.scene.engine;
   }
