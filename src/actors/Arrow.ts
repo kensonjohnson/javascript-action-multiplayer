@@ -11,6 +11,7 @@ import {
   UP,
 } from "@/constants.js";
 import { Player } from "./Players/Player";
+import { NetworkPlayer } from "./Players/NetworkPlayer";
 
 const arrowSpriteSheet = SpriteSheet.fromImageSource({
   image: Images.arrowSheetImage,
@@ -28,7 +29,7 @@ const arrowLeftAnim = Animation.fromSpriteSheet(arrowSpriteSheet, [2], 100);
 const arrowRightAnim = Animation.fromSpriteSheet(arrowSpriteSheet, [3], 100);
 
 export class Arrow extends Actor {
-  owner: Player | null;
+  owner: Player | NetworkPlayer | null;
   msRemaining: number;
 
   constructor(x: number, y: number, direction: Direction) {
