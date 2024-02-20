@@ -1,4 +1,4 @@
-import { Engine, Input, Keys } from "excalibur";
+import { Engine, Keys } from "excalibur";
 import { UP, DOWN, LEFT, RIGHT, Direction } from "@/constants";
 
 export class DirectionQueue {
