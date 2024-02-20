@@ -144,16 +144,16 @@ export class Player extends Actor {
     this.vel.x = 0;
     this.vel.y = 0;
     if (keyboard.isHeld(Keys.Left)) {
-      this.vel.x = -1;
+      this.vel.x -= 1;
     }
     if (keyboard.isHeld(Keys.Right)) {
-      this.vel.x = 1;
+      this.vel.x += 1;
     }
     if (keyboard.isHeld(Keys.Up)) {
-      this.vel.y = -1;
+      this.vel.y -= 1;
     }
     if (keyboard.isHeld(Keys.Down)) {
-      this.vel.y = 1;
+      this.vel.y += 1;
     }
 
     // Normalize the walking speed
