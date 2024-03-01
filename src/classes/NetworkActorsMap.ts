@@ -1,6 +1,8 @@
+import { NetworkMonster } from "@/actors/Monsters/NetworkMonster";
 import { NetworkPlayer } from "@/actors/Players/NetworkPlayer";
 import {
   Direction,
+  EVENT_NETWORK_MONSTER_UPDATE,
   EVENT_NETWORK_PLAYER_LEAVE,
   EVENT_NETWORK_PLAYER_UPDATE,
 } from "@/constants";
@@ -32,15 +34,18 @@ type DecodedNetworkString = [
 
 export class NetworkActorsMap {
   engine: Engine;
-  playerMap: Map<string, NetworkPlayer>;
+  playerMap: Map<string, NetworkPlayer | NetworkMonster>;
 
   constructor(engine: Engine) {
     this.engine = engine;
     this.playerMap = new Map();
 
-    // type otherPlayer = { id: string; data: string };
     this.engine.on(EVENT_NETWORK_PLAYER_UPDATE, (otherPlayer: any) => {
       this.onUpdatedPlayer(otherPlayer.id, otherPlayer.data);
+    });
+
+    this.engine.on(EVENT_NETWORK_MONSTER_UPDATE, (content: any) => {
+      this.onUpdatedMonster(content);
     });
 
     this.engine.on(EVENT_NETWORK_PLAYER_LEAVE, (otherPlayer: any) => {
@@ -77,7 +82,7 @@ export class NetworkActorsMap {
       stateUpdate.velY = Number(velY);
     }
 
-    let otherPlayerActor = this.playerMap.get(id);
+    let otherPlayerActor = this.playerMap.get(id) as NetworkPlayer | undefined;
     if (!otherPlayerActor) {
       otherPlayerActor = new NetworkPlayer(stateUpdate.x, stateUpdate.y);
       this.playerMap.set(id, otherPlayerActor);
@@ -93,5 +98,32 @@ export class NetworkActorsMap {
       actorToRemove.kill();
     }
     this.playerMap.delete(id);
+  }
+
+  onUpdatedMonster(content: any) {
+    const [_type, networkId, x, y, _velX, _velY, facing, hasPainState, hp] =
+      content.split("|");
+
+    let networkActor = this.playerMap.get(networkId) as
+      | NetworkMonster
+      | undefined;
+    // Add new if it doesn't exist
+    if (!networkActor) {
+      networkActor = new NetworkMonster(x, y);
+      this.playerMap.set(networkId, networkActor);
+      this.engine.add(networkActor);
+    }
+
+    // Update the node
+    networkActor.pos.x = Number(x);
+    networkActor.pos.y = Number(y);
+    networkActor.facing = facing as Direction;
+    networkActor.hasPainState = hasPainState === "true";
+
+    // Destroy if dead
+    if (Number(hp) <= 0) {
+      networkActor.tookFinalDamage();
+      this.playerMap.delete(networkId);
+    }
   }
 }
