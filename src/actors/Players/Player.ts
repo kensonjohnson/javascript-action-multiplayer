@@ -14,6 +14,9 @@ import {
   EVENT_SEND_PLAYER_UPDATE,
   LEFT,
   SCALE_2x,
+  TAG_ANY_PLAYER,
+  TAG_DAMAGES_PLAYER,
+  TAG_PLAYER_WEAPON,
   UP,
 } from "@/constants";
 import { DirectionQueue } from "@/classes/DirectionQueue";
@@ -70,6 +73,10 @@ export class Player extends Actor {
     this.graphics.use(this.skinAnimations.DOWN.WALK);
     this.skinId = skinId;
     this.isPainFlashing = false;
+    this.addTag(TAG_ANY_PLAYER);
+    this.on("collisionstart", (event) => {
+      this.onCollisionStart(event);
+    });
   }
 
   onInitialize(engine: Engine): void {
@@ -77,6 +84,19 @@ export class Player extends Actor {
     this.playerAnimations = new PlayerAnimations(this);
     this.playerActions = new PlayerActions(this);
     this.networkUpdater = new NetworkUpdater(engine, EVENT_SEND_PLAYER_UPDATE);
+  }
+
+  onCollisionStart(event: any) {
+    // Take damage from other player's weapons
+    if (event.other?.hasTag(TAG_PLAYER_WEAPON) && event.other.owner !== this) {
+      this.takeDamage();
+      event.other.onDamagedSomething();
+    }
+
+    // Take damage from external things (Enemies, etc)
+    if (event.other?.hasTag(TAG_DAMAGES_PLAYER)) {
+      this.takeDamage();
+    }
   }
 
   // Concats enough information to send to other players

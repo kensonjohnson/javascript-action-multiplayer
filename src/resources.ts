@@ -6,6 +6,7 @@ export const Images = {
   blueSheetImage: new ImageSource("sprites/character-blue-sheet.png"),
   graySheetImage: new ImageSource("sprites/character-gray-sheet.png"),
   yellowSheetImage: new ImageSource("sprites/character-yellow-sheet.png"),
+  monsterSheetImage: new ImageSource("sprites/monster-sheet.png"),
 
   // Maps
   indoorImage: new ImageSource("maps/indoor.png"),
@@ -13,6 +14,9 @@ export const Images = {
   // Weapons
   swordSheetImage: new ImageSource("sprites/sword-sheet.png"),
   arrowSheetImage: new ImageSource("sprites/arrow-sheet.png"),
+
+  // Effects
+  explosionSheetImage: new ImageSource("sprites/explosion-sheet.png"),
 };
 
 export const Sounds = {};
