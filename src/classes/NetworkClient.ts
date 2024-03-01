@@ -1,4 +1,5 @@
 import {
+  EVENT_NETWORK_MONSTER_UPDATE,
   EVENT_NETWORK_PLAYER_LEAVE,
   EVENT_NETWORK_PLAYER_UPDATE,
 } from "@/constants";
@@ -51,6 +52,7 @@ export class NetworkClient {
 
       // Receive data from other players
       connection.on("data", (data) => {
+        // @ts-expect-error
         this.handleIncomingData(connection, data);
       });
 
@@ -81,6 +83,7 @@ export class NetworkClient {
 
       // Subscribe to their updates
       conn.on("data", (data) => {
+        // @ts-expect-error
         this.handleIncomingData(conn, data);
       });
 
@@ -93,8 +96,12 @@ export class NetworkClient {
     }
   }
 
-  handleIncomingData(connection: DataConnection, data: any) {
-    console.log("Got data from", connection.peer, data);
+  handleIncomingData(connection: DataConnection, data: string) {
+    // Handle MONSTER updates, detected by prefix
+    if (data.startsWith("MONSTER")) {
+      this.engine.emit(EVENT_NETWORK_MONSTER_UPDATE, data);
+      return;
+    }
 
     // Handle PLAYER prefix
     this.engine.emit(EVENT_NETWORK_PLAYER_UPDATE, {
