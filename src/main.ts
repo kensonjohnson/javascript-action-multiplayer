@@ -5,6 +5,7 @@ import {
   SCALE,
   EVENT_SEND_PLAYER_UPDATE,
   TAG_ANY_PLAYER,
+  EVENT_SEND_MONSTER_UPDATE,
 } from "@/constants";
 import { Player } from "@/actors/Players/Player.ts";
 import { loader } from "@/resources.ts";
@@ -39,6 +40,10 @@ game.on("initialize", () => {
 
   // When one of my nodes update, send it to all players
   game.on(EVENT_SEND_PLAYER_UPDATE, (update: any) => {
+    peer.sendUpdate(update);
+  });
+
+  game.on(EVENT_SEND_MONSTER_UPDATE, (update: any) => {
     peer.sendUpdate(update);
   });
 });
