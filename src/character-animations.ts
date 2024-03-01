@@ -99,3 +99,64 @@ export function generateCharacterAnimations(
   });
   return payload;
 }
+
+const monsterSpriteSheet = SpriteSheet.fromImageSource({
+  image: Images.monsterSheetImage,
+  grid: {
+    columns: 4,
+    rows: 4,
+    spriteWidth: 16,
+    spriteHeight: 16,
+  },
+});
+
+const MONSTER_ANIMATION_SPEED = 300;
+
+export function generateMonsterAnimations() {
+  return {
+    [WALK]: {
+      [DOWN]: Animation.fromSpriteSheet(
+        monsterSpriteSheet,
+        [0, 1],
+        MONSTER_ANIMATION_SPEED
+      ),
+      [UP]: Animation.fromSpriteSheet(
+        monsterSpriteSheet,
+        [4, 5],
+        MONSTER_ANIMATION_SPEED
+      ),
+      [LEFT]: Animation.fromSpriteSheet(
+        monsterSpriteSheet,
+        [8, 9],
+        MONSTER_ANIMATION_SPEED
+      ),
+      [RIGHT]: Animation.fromSpriteSheet(
+        monsterSpriteSheet,
+        [12, 13],
+        MONSTER_ANIMATION_SPEED
+      ),
+    },
+    [PAIN]: {
+      [DOWN]: Animation.fromSpriteSheet(
+        monsterSpriteSheet,
+        [2, 3],
+        MONSTER_ANIMATION_SPEED
+      ),
+      [UP]: Animation.fromSpriteSheet(
+        monsterSpriteSheet,
+        [6, 7],
+        MONSTER_ANIMATION_SPEED
+      ),
+      [LEFT]: Animation.fromSpriteSheet(
+        monsterSpriteSheet,
+        [10, 11],
+        MONSTER_ANIMATION_SPEED
+      ),
+      [RIGHT]: Animation.fromSpriteSheet(
+        monsterSpriteSheet,
+        [14, 15],
+        MONSTER_ANIMATION_SPEED
+      ),
+    },
+  };
+}
