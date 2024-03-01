@@ -14,6 +14,7 @@ import {
   EVENT_SEND_PLAYER_UPDATE,
   LEFT,
   SCALE_2x,
+  TAG_ANY_PLAYER,
   UP,
 } from "@/constants";
 import { DirectionQueue } from "@/classes/DirectionQueue";
@@ -70,6 +71,7 @@ export class Player extends Actor {
     this.graphics.use(this.skinAnimations.DOWN.WALK);
     this.skinId = skinId;
     this.isPainFlashing = false;
+    this.addTag(TAG_ANY_PLAYER);
   }
 
   onInitialize(engine: Engine): void {
