@@ -4,7 +4,7 @@ import {
   ANCHOR_CENTER,
   DOWN,
   Direction,
-  EVENT_NETWORK_MONSTER_UPDATE,
+  EVENT_SEND_MONSTER_UPDATE,
   LEFT,
   PAIN,
   RIGHT,
@@ -19,12 +19,11 @@ import {
 import { guidGenerator, randomFromArray } from "@/helpers";
 import {
   Actor,
-  CollisionStartEvent,
   CollisionType,
   Engine,
-  PolygonCollider,
   Shape,
   Vector,
+  Animation,
 } from "excalibur";
 import { Explosion } from "../Explosion";
 
@@ -45,7 +44,7 @@ export class Monster extends Actor {
   facing: Direction;
   animations: {
     [key: string]: {
-      [key: string]: any;
+      [key: string]: Animation;
     };
   };
   networkUpdater?: NetworkUpdater;
@@ -80,14 +79,17 @@ export class Monster extends Actor {
 
     void this.queryForTarget();
 
-    this.networkUpdater = new NetworkUpdater(
-      engine,
-      EVENT_NETWORK_MONSTER_UPDATE
-    );
+    this.networkUpdater = new NetworkUpdater(engine, EVENT_SEND_MONSTER_UPDATE);
+  }
+
+  createNetworkUpdateString() {
+    const hasPainState = Boolean(this.painState);
+    const x = Math.round(this.pos.x);
+    const y = Math.round(this.pos.y);
+    return `MONSTER|${this.networkId}|${x}|${y}|${this.vel.x}|${this.vel.y}|${this.facing}|${hasPainState}|${this.hp}`;
   }
 
   onCollisionStart(event: any) {
-    console.log("Collision", event);
     if (event.other?.hasTag(TAG_PLAYER_WEAPON)) {
       if (event.other.isUsed) {
         return;
@@ -110,6 +112,11 @@ export class Monster extends Actor {
       this.kill();
       const explosion = new Explosion(this.pos.x, this.pos.y);
       this.scene.engine.add(explosion);
+
+      // Emit death event to network
+      const networkUpdateString = this.createNetworkUpdateString();
+      this.networkUpdater?.sendStateUpdate(networkUpdateString);
+
       return;
     }
 
@@ -190,6 +197,10 @@ export class Monster extends Actor {
 
     // Show the correct appearance
     this.onPreUpdateAnimation();
+
+    // Update network
+    const networkUpdateString = this.createNetworkUpdateString();
+    this.networkUpdater?.sendStateUpdate(networkUpdateString);
   }
 
   onPreUpdateMoveTowardsRoamingPoint() {
