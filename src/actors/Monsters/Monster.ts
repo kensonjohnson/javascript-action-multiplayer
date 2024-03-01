@@ -12,11 +12,21 @@ import {
   SCALE_2x,
   TAG_ANY_PLAYER,
   TAG_DAMAGES_PLAYER,
+  TAG_PLAYER_WEAPON,
   UP,
   WALK,
 } from "@/constants";
 import { guidGenerator, randomFromArray } from "@/helpers";
-import { Actor, CollisionType, Engine, Shape, Vector } from "excalibur";
+import {
+  Actor,
+  CollisionStartEvent,
+  CollisionType,
+  Engine,
+  PolygonCollider,
+  Shape,
+  Vector,
+} from "excalibur";
+import { Explosion } from "../Explosion";
 
 const MONSTER_WALK_VELOCITY = 30;
 const MONSTER_CHASE_VELOCITY = 65;
@@ -55,6 +65,10 @@ export class Monster extends Actor {
     this.hp = 3;
     this.facing = DOWN;
     this.animations = generateMonsterAnimations();
+
+    this.on("collisionstart", (event) => {
+      this.onCollisionStart(event);
+    });
   }
 
   onInitialize(engine: Engine): void {
@@ -70,6 +84,56 @@ export class Monster extends Actor {
       engine,
       EVENT_NETWORK_MONSTER_UPDATE
     );
+  }
+
+  onCollisionStart(event: any) {
+    console.log("Collision", event);
+    if (event.other?.hasTag(TAG_PLAYER_WEAPON)) {
+      if (event.other.isUsed) {
+        return;
+      }
+      event.other.onDamagedSomething();
+      this.takeDamage(event.other.direction);
+    }
+  }
+
+  takeDamage(direction: Direction) {
+    if (this.painState) {
+      return;
+    }
+
+    // Reduce HP
+    this.hp -= 1;
+
+    // Check for death
+    if (this.hp <= 0) {
+      this.kill();
+      const explosion = new Explosion(this.pos.x, this.pos.y);
+      this.scene.engine.add(explosion);
+      return;
+    }
+
+    // Set pain state
+    let x = this.vel.x * -1;
+    if (direction === LEFT) {
+      x = -300;
+    }
+    if (direction === RIGHT) {
+      x = 300;
+    }
+    let y = this.vel.y * -1;
+    if (direction === UP) {
+      y = -300;
+    }
+    if (direction === DOWN) {
+      y = 300;
+    }
+
+    this.painState = {
+      msLeft: 100,
+      painVelX: x,
+      painVelY: y,
+    };
   }
 
   async queryForTarget() {
