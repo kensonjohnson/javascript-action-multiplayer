@@ -18,6 +18,15 @@ const LOCALHOST_CONFIG = {
 
 const LOCALHOST_URL = `http://localhost:${PORT}`;
 
+const PRODUCTION_CONFIG = {
+  host: "action-multiplayer-server.onrender.com",
+  key: "demodemo",
+  path: "/myapp",
+  secure: true,
+};
+
+const PRODUCTION_URL = "https://action-multiplayer-server.onrender.com";
+
 export class NetworkClient {
   engine: Engine;
   peerId: string;
@@ -32,7 +41,9 @@ export class NetworkClient {
   }
 
   async init() {
-    this.peer = new Peer(this.peerId, LOCALHOST_CONFIG);
+    const config = import.meta.env.PROD ? PRODUCTION_CONFIG : LOCALHOST_CONFIG;
+
+    this.peer = new Peer(this.peerId, config);
 
     this.peer.on("error", (err) => {
       console.error(err);
@@ -111,7 +122,8 @@ export class NetworkClient {
   }
 
   async getAllPeerIds() {
-    const response = await fetch(`${LOCALHOST_URL}/myapp/demodemo/peers`);
+    const url = import.meta.env.PROD ? PRODUCTION_URL : LOCALHOST_URL;
+    const response = await fetch(`${url}/myapp/demodemo/peers`);
     const peersArray = await response.json();
     const list = peersArray ?? [];
     return list.filter((id: string) => id !== this.peerId);
